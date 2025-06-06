@@ -10,9 +10,9 @@ plugins:
   - serverless-offline
 
 functions:
-  test:
-    handler: src/test.test
+  merged:
+    handler: src/handlers/merged.merged
     events:
       - httpApi:
-          path: /test
+          path: /merged
           method: get
