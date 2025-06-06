@@ -9,7 +9,8 @@
     "lint": "tslint '*.ts'",
     "deploy": "serverless deploy",
     "remove": "serverless remove",
-    "invoke": "serverless invoke -f hello"
+    "invoke": "serverless invoke -f hello",
+    "offline": "serverless offline"
   },
   "keywords": [],
   "author": "Italo Bejarano",
@@ -17,6 +18,8 @@
   "devDependencies": {
     "@types/aws-sdk": "0.0.42",
     "@types/node": "^7.0.5",
+    "serverless-dotenv-plugin": "^1.1.5",
+    "serverless-offline": "^14.4.0",
     "tslint": "^5.5.0",
     "tslint-config-standard": "^6.0.1",
     "typescript": "^2.4.2"
