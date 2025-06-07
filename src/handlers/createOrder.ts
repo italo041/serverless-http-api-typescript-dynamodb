@@ -6,6 +6,16 @@ import { httpResponse } from "../utils/httpResponse";
 
 export const createOrder = async (event: any) => {
   try {
+    if (
+      event.body === null ||
+      event.body === undefined ||
+      (typeof event.body === "string" && event.body.trim() === "")
+    ) {
+      return httpResponse(400, {
+        message: "El body no puede ser nulo ni vacío",
+      });
+    }
+
     const body =
       typeof event.body === "string" ? JSON.parse(event.body) : event.body;
 
