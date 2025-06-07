@@ -5,6 +5,9 @@ provider:
   runtime: nodejs20.x
   region: us-east-1
   stage: dev
+  tracing:
+    lambda: true
+    apiGateway: true
   iamRoleStatements:
     - Effect: "Allow"
       Action:
@@ -47,6 +50,7 @@ functions:
     handler: src/handlers/merged.merged
     memorySize: 1024       
     timeout: 10             
+    tracing: true
     events:
       - httpApi:
           path: /merged
@@ -59,6 +63,7 @@ functions:
     handler: src/handlers/getHistory.getHistory
     memorySize: 1024        
     timeout: 10             
+    tracing: true
     events:
       - httpApi:
           path: /history
@@ -71,6 +76,7 @@ functions:
     handler: src/handlers/createOrder.createOrder
     memorySize: 1024        
     timeout: 10             
+    tracing: true
     events:
       - httpApi:
           path: /order
