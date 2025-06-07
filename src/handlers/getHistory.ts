@@ -1,13 +1,19 @@
 import { DynamoDB } from "aws-sdk";
-import { getQueryParams } from "../utils/getQueryParams";
+import { getHistoryQuerySchema, GetHistoryQueryDTO } from "../dtos/getHistoryQuery.dto";
 const dynamoDb = new DynamoDB.DocumentClient();
+import { httpResponse } from "../utils/httpResponse";
 
 export const getHistory = async (
-  event: any // Cambiar la firma para recibir el evento de Lambda
+  event: any
 ) => {
   try {
     const query = event.queryStringParameters || {};
-    const { limit, lastKey } = getQueryParams(query);
+
+    const { error, value } = getHistoryQuerySchema.validate(query);
+    if (error) {
+      return httpResponse(400, { message: "Invalid query parameters", details: error.details });
+    }
+    const { limit, lastKey } = value as GetHistoryQueryDTO;
 
     const params: DynamoDB.DocumentClient.ScanInput = {
       TableName: process.env.DYNAMODB_TABLE!,
@@ -21,28 +27,23 @@ export const getHistory = async (
       Limit: limit,
     };
 
-    if (lastKey && typeof lastKey === "object" && lastKey.id && typeof lastKey.id === "string") {
-      params.ExclusiveStartKey = lastKey;
-    } else if (lastKey) {
-      console.error("lastKey dont match", lastKey);
+    if (lastKey) {
+      params.ExclusiveStartKey = { id: lastKey };
     }
 
     const data = await dynamoDb.scan(params).promise();
 
-    return {
-      statusCode: 200,
-      body: JSON.stringify({
-        data,
+    return httpResponse(200, {
+      data,
+      pagination: {
         lastKey: data.LastEvaluatedKey || null,
-      }),
-    };
+        limit: limit,
+      }
+    });
   } catch (error) {
-    return {
-      statusCode: 400,
-      body: JSON.stringify({
-        message: "Error fetching history",
-        error: error instanceof Error ? error.message : error,
-      }),
-    };
+    return httpResponse(400, {
+      message: "Error fetching history",
+      error: error instanceof Error ? error.message : error,
+    });
   }
 };

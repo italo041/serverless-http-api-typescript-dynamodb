@@ -27,6 +27,7 @@
     "typescript": "^5.8.3"
   },
   "dependencies": {
+    "joi": "^17.13.3",
     "uuid": "^3.1.0"
   }
 }

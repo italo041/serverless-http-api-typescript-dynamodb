@@ -1,9 +1,9 @@
 import { getRandomStarWarsFilm } from "../services/swapiService";
 import { getWikipediaSummary } from "../services/mediaWikiService";
-
 import * as uuid from "uuid";
 import { DynamoDB } from "aws-sdk";
 const dynamoDb = new DynamoDB.DocumentClient();
+import { httpResponse } from "../utils/httpResponse";
 
 export const merged = async () => {
   try {
@@ -33,16 +33,9 @@ export const merged = async () => {
 
     await dynamoDb.put(params).promise();
 
-    return {
-      statusCode: 200,
-      body: JSON.stringify(response),
-    };
-    
+    return httpResponse(200, response);
   } catch (error) {
     console.error(error);
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ error: "Error in merged handler" }),
-    };
+    return httpResponse(500, { error: "Error in merged handler" });
   }
 };

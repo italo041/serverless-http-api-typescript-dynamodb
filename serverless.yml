@@ -14,6 +14,7 @@ provider:
         - dynamodb:Query
       Resource:
         - arn:aws:dynamodb:${self:provider.region}:*:table/StarWarsRequests
+        - arn:aws:dynamodb:${self:provider.region}:*:table/Orders
 
 plugins:
   - serverless-dotenv-plugin
@@ -48,12 +49,32 @@ functions:
     environment:
       DYNAMODB_TABLE: StarWarsRequests
 
+  createOrder:
+    handler: src/handlers/createOrder.createOrder
+    events:
+      - httpApi:
+          path: /order
+          method: post
+    environment:
+      DYNAMODB_TABLE2: Orders
+
 resources:
   Resources:
     StarWarsRequests:
       Type: AWS::DynamoDB::Table
       Properties:
         TableName: StarWarsRequests
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
+    Orders:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: Orders
         AttributeDefinitions:
           - AttributeName: id
             AttributeType: S
