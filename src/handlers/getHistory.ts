@@ -33,13 +33,15 @@ export const getHistory = async (
 
     const data = await dynamoDb.scan(params).promise();
 
-    return httpResponse(200, {
+    const response = {
       data,
       pagination: {
         lastKey: data.LastEvaluatedKey || null,
         limit: limit,
       }
-    });
+    };
+
+    return httpResponse(200, response);
   } catch (error) {
     return httpResponse(400, {
       message: "Error fetching history",

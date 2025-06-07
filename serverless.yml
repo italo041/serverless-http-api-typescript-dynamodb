@@ -15,6 +15,7 @@ provider:
       Resource:
         - arn:aws:dynamodb:${self:provider.region}:*:table/StarWarsRequests
         - arn:aws:dynamodb:${self:provider.region}:*:table/Orders
+        - arn:aws:dynamodb:${self:provider.region}:*:table/CacheTable
 
 plugins:
   - serverless-dotenv-plugin
@@ -39,6 +40,7 @@ functions:
           method: get
     environment:
       DYNAMODB_TABLE: StarWarsRequests
+      DYNAMODB_CACHE_TABLE: CacheTable
 
   getHistory:
     handler: src/handlers/getHistory.getHistory
@@ -48,6 +50,7 @@ functions:
           method: get
     environment:
       DYNAMODB_TABLE: StarWarsRequests
+      DYNAMODB_CACHE_TABLE: CacheTable
 
   createOrder:
     handler: src/handlers/createOrder.createOrder
@@ -75,6 +78,17 @@ resources:
       Type: AWS::DynamoDB::Table
       Properties:
         TableName: Orders
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
+    CacheTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: CacheTable
         AttributeDefinitions:
           - AttributeName: id
             AttributeType: S
