@@ -23,18 +23,12 @@ provider:
         - arn:aws:dynamodb:${self:provider.region}:*:table/StarWarsRequests
         - arn:aws:dynamodb:${self:provider.region}:*:table/Orders
         - arn:aws:dynamodb:${self:provider.region}:*:table/CacheTable
-  httpApi:
-    accessLogSettings:
-      destinationArn:
-        Fn::GetAtt:
-          - HttpApiLogGroup
-          - Arn
-      format: '{"requestId":"$context.requestId","ip":"$context.identity.sourceIp","requestTime":"$context.requestTime","httpMethod":"$context.httpMethod","routeKey":"$context.routeKey","status":"$context.status","protocol":"$context.protocol"}'
 
 plugins:
   - serverless-dotenv-plugin
   - serverless-offline
   - serverless-dynamodb
+  - serverless-api-gateway-throttling
 
 custom:
   dynamodb:
@@ -44,6 +38,9 @@ custom:
       port: 8000
       inMemory: true
       migrate: true
+  apiGatewayThrottling:
+    maxRequestsPerSecond: 2
+    maxConcurrentRequests: 2
 
 functions:
   merged:
