@@ -39,6 +39,15 @@ functions:
     environment:
       DYNAMODB_TABLE: StarWarsRequests
 
+  getHistory:
+    handler: src/handlers/getHistory.getHistory
+    events:
+      - httpApi:
+          path: /history
+          method: get
+    environment:
+      DYNAMODB_TABLE: StarWarsRequests
+
 resources:
   Resources:
     StarWarsRequests:
