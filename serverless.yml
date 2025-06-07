@@ -4,10 +4,30 @@ provider:
   name: aws
   runtime: nodejs20.x
   region: us-east-1
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:GetItem
+        - dynamodb:Scan
+        - dynamodb:Query
+      Resource:
+        - arn:aws:dynamodb:${self:provider.region}:*:table/StarWarsRequests
 
 plugins:
   - serverless-dotenv-plugin
   - serverless-offline
+  - serverless-dynamodb
+
+custom:
+  dynamodb:
+    stages:
+      - dev
+    start:
+      port: 8000
+      inMemory: true
+      migrate: true
 
 functions:
   merged:
@@ -16,3 +36,19 @@ functions:
       - httpApi:
           path: /merged
           method: get
+    environment:
+      DYNAMODB_TABLE: StarWarsRequests
+
+resources:
+  Resources:
+    StarWarsRequests:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: StarWarsRequests
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST

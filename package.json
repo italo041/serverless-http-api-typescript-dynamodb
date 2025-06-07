@@ -16,13 +16,15 @@
   "author": "Italo Bejarano",
   "license": "ISC",
   "devDependencies": {
-    "@types/aws-sdk": "0.0.42",
-    "@types/node": "^7.0.5",
+    "@types/aws-sdk": "^2.7.4",
+    "@types/node": "^22.15.30",
     "serverless-dotenv-plugin": "^1.1.5",
+    "serverless-dynamodb": "^0.2.56",
+    "serverless-dynamodb-local": "^0.2.10",
     "serverless-offline": "^14.4.0",
-    "tslint": "^5.5.0",
-    "tslint-config-standard": "^6.0.1",
-    "typescript": "^2.4.2"
+    "tslint": "^6.1.3",
+    "tslint-config-standard": "^9.0.0",
+    "typescript": "^5.8.3"
   },
   "dependencies": {
     "uuid": "^3.1.0"
