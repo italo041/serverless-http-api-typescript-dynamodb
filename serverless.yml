@@ -4,7 +4,14 @@ provider:
   name: aws
   runtime: nodejs20.x
   region: us-east-1
+  stage: dev
   iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - "logs:CreateLogGroup"
+        - "logs:CreateLogStream"
+        - "logs:PutLogEvents"
+      Resource: "arn:aws:logs:*:*:*"
     - Effect: Allow
       Action:
         - dynamodb:PutItem
@@ -16,6 +23,13 @@ provider:
         - arn:aws:dynamodb:${self:provider.region}:*:table/StarWarsRequests
         - arn:aws:dynamodb:${self:provider.region}:*:table/Orders
         - arn:aws:dynamodb:${self:provider.region}:*:table/CacheTable
+  httpApi:
+    accessLogSettings:
+      destinationArn:
+        Fn::GetAtt:
+          - HttpApiLogGroup
+          - Arn
+      format: '{"requestId":"$context.requestId","ip":"$context.identity.sourceIp","requestTime":"$context.requestTime","httpMethod":"$context.httpMethod","routeKey":"$context.routeKey","status":"$context.status","protocol":"$context.protocol"}'
 
 plugins:
   - serverless-dotenv-plugin
@@ -34,7 +48,7 @@ custom:
 functions:
   merged:
     handler: src/handlers/merged.merged
-    memorySize: 128        
+    memorySize: 1024       
     timeout: 10             
     events:
       - httpApi:
@@ -46,7 +60,7 @@ functions:
 
   getHistory:
     handler: src/handlers/getHistory.getHistory
-    memorySize: 128        
+    memorySize: 1024        
     timeout: 10             
     events:
       - httpApi:
@@ -58,7 +72,7 @@ functions:
 
   createOrder:
     handler: src/handlers/createOrder.createOrder
-    memorySize: 128        
+    memorySize: 1024        
     timeout: 10             
     events:
       - httpApi:
@@ -69,6 +83,11 @@ functions:
 
 resources:
   Resources:
+    HttpApiLogGroup:
+      Type: AWS::Logs::LogGroup
+      Properties:
+        LogGroupName: /aws/http-api/${self:service}-${self:provider.stage}
+        RetentionInDays: 14
     StarWarsRequests:
       Type: AWS::DynamoDB::Table
       Properties:
