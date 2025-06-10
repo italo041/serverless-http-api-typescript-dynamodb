@@ -84,6 +84,15 @@ functions:
     environment:
       DYNAMODB_TABLE2: Orders
 
+  swagger:
+    handler: src/handlers/swagger.swagger
+    memorySize: 512
+    timeout: 5
+    events:
+      - httpApi:
+          path: /swagger.yaml
+          method: get
+
 resources:
   Resources:
     HttpApiLogGroup:
