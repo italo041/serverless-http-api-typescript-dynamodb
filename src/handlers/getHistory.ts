@@ -8,7 +8,7 @@ import { httpResponse } from "../utils/httpResponse";
 import middy = require("middy");
 import { verifyJWTMiddleware } from "../middlewares/validateCognito";
 import { errorHandler } from "../middlewares/errorHandler";
-import moment = require("moment");
+import moment = require("moment-timezone");
 
 export const getHistory = async (event: any) => {
   try {
@@ -62,7 +62,7 @@ export const getHistory = async (event: any) => {
     if (data.Items) {
       data.Items = data.Items.map(item => {
         if (item.createdAt) {
-          item.createdAt = moment(item.createdAt).subtract(-5).format("YYYY/MM/DD HH:mm:ss");
+          item.createdAt = moment(item.createdAt).tz("America/Lima").format("YYYY/MM/DD HH:mm:ss");
         }
         return item;
       });

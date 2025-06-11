@@ -39,6 +39,7 @@ provider:
         - dynamodb:Query
       Resource:
         - arn:aws:dynamodb:${self:provider.region}:*:table/StarWarsRequests
+        - arn:aws:dynamodb:${self:provider.region}:*:table/StarWarsRequests/index/createdAtIndex
         - arn:aws:dynamodb:${self:provider.region}:*:table/Orders
         - arn:aws:dynamodb:${self:provider.region}:*:table/CacheTable
 
