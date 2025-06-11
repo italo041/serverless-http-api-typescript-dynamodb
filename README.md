@@ -91,11 +91,12 @@ Ejemplo para devolver el historial:
 
 Parámetros soportados (query string):
 - `limit`: número entero entre 1 y 100, opcional, por defecto 10.
-- `lastKey`: string opcional para paginación.
+- `lastEvaluatedKey`: objeto JSON para paginación (opcional, debe ser serializado como string).
+- `order`: 'asc' para orden ascendente o 'desc' para descendente (opcional, por defecto descendente).
 
 Ejemplo:
 ```
-curl "https://<your-api-id>.execute-api.<region>.amazonaws.com/history?limit=5&lastKey=eyJpZCI6IjEyMyJ9" \
+curl "https://<your-api-id>.execute-api.<region>.amazonaws.com/history?limit=5&order=asc&lastEvaluatedKey=%7B%22id%22%3A%22abc123%22%2C%22createdAt%22%3A1749618691083%2C%22type%22%3A%22history%22%7D" \
   -H "Authorization: Bearer <tu_token_jwt>"
 ```
 

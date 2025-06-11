@@ -55,11 +55,19 @@ paths:
           required: false
           description: Número máximo de resultados a devolver
         - in: query
-          name: lastKey
+          name: lastEvaluatedKey
           schema:
             type: string
           required: false
-          description: Última clave para paginación
+          description: Última clave evaluada para paginación (JSON string)
+        - in: query
+          name: order
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: desc
+          required: false
+          description: Orden de los resultados por fecha de creación (ascendente o descendente)
       responses:
         "200":
           description: Respuesta exitosa
