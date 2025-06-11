@@ -15,6 +15,14 @@ jest.mock("aws-sdk", () => ({
 jest.mock("uuid");
 jest.mock("../../src/dtos/createOrder.dto");
 jest.mock("../../src/utils/httpResponse");
+jest.mock("@middy/http-json-body-parser", () => ({
+  __esModule: true,
+  default: jest.fn(() => ({
+    before: jest.fn(),
+    after: jest.fn(),
+    onError: jest.fn(),
+  })),
+}));
 
 const OLD_ENV = process.env;
 

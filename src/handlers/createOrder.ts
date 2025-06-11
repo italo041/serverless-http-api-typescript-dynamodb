@@ -8,7 +8,7 @@ import { verifyJWTMiddleware } from "../middlewares/validateCognito";
 import httpJsonBodyParser from "@middy/http-json-body-parser";
 import { errorHandler } from "../middlewares/errorHandler";
 
-const createOrder = async (event: any) => {
+export const createOrder = async (event: any) => {
   try {
     const { error, value } = createOrderSchema.validate(event.body);
 

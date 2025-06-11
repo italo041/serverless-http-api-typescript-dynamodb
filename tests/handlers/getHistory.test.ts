@@ -5,7 +5,7 @@ import * as httpResponseModule from "../../src/utils/httpResponse";
 jest.mock("aws-sdk", () => ({
   DynamoDB: {
     DocumentClient: jest.fn().mockImplementation(() => ({
-      scan: jest.fn().mockReturnThis(),
+      query: jest.fn().mockReturnThis(),
       promise: jest.fn().mockResolvedValueOnce({
         Items: [{ id: "1" }],
         LastEvaluatedKey: "last-key"
