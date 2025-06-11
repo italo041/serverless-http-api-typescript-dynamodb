@@ -114,3 +114,8 @@ npm run test
 ## Notas
 
 - Los datos se almacenan en las tablas DynamoDB: `StarWarsRequests`, `Orders` y `CacheTable`.
+- La creación de usuarios se puede realizar desde la consola de AWS.
+  1. Accede a la consola de AWS IAM.
+  2. Haz clic en "Usuarios" y selecciona "Agregar usuario".
+  3. Configura los permisos y políticas necesarias para el usuario.
+  4. Finaliza el proceso y toma nota de las credenciales generadas.
