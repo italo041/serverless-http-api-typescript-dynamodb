@@ -3,23 +3,14 @@ const dynamoDb = new DynamoDB.DocumentClient();
 import * as uuid from "uuid";
 import { createOrderSchema } from "../dtos/createOrder.dto";
 import { httpResponse } from "../utils/httpResponse";
+import middy = require("middy");
+import { verifyJWTMiddleware } from "../middlewares/validateCognito";
+import httpJsonBodyParser from "@middy/http-json-body-parser";
+import { errorHandler } from "../middlewares/errorHandler";
 
-export const createOrder = async (event: any) => {
+const createOrder = async (event: any) => {
   try {
-    if (
-      event.body === null ||
-      event.body === undefined ||
-      (typeof event.body === "string" && event.body.trim() === "")
-    ) {
-      return httpResponse(400, {
-        message: "El body no puede ser nulo ni vacío",
-      });
-    }
-
-    const body =
-      typeof event.body === "string" ? JSON.parse(event.body) : event.body;
-
-    const { error, value } = createOrderSchema.validate(body);
+    const { error, value } = createOrderSchema.validate(event.body);
 
     if (error) {
       return httpResponse(400, {
@@ -53,3 +44,8 @@ export const createOrder = async (event: any) => {
     });
   }
 };
+
+export const createOrderHandler = middy(createOrder)
+  .use(httpJsonBodyParser())
+  .use(verifyJWTMiddleware())
+  .use(errorHandler());

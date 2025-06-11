@@ -1,17 +1,24 @@
 import { DynamoDB } from "aws-sdk";
-import { getHistoryQuerySchema, GetHistoryQueryDTO } from "../dtos/getHistoryQuery.dto";
+import {
+  getHistoryQuerySchema,
+  GetHistoryQueryDTO,
+} from "../dtos/getHistoryQuery.dto";
 const dynamoDb = new DynamoDB.DocumentClient();
 import { httpResponse } from "../utils/httpResponse";
+import middy = require("middy");
+import { verifyJWTMiddleware } from "../middlewares/validateCognito";
+import { errorHandler } from "../middlewares/errorHandler";
 
-export const getHistory = async (
-  event: any
-) => {
+export const getHistory = async (event: any) => {
   try {
     const query = event.queryStringParameters || {};
 
     const { error, value } = getHistoryQuerySchema.validate(query);
     if (error) {
-      return httpResponse(400, { message: "Invalid query parameters", details: error.details });
+      return httpResponse(400, {
+        message: "Invalid query parameters",
+        details: error.details,
+      });
     }
     const { limit, lastKey } = value as GetHistoryQueryDTO;
 
@@ -38,7 +45,7 @@ export const getHistory = async (
       pagination: {
         lastKey: data.LastEvaluatedKey || null,
         limit: limit,
-      }
+      },
     };
 
     return httpResponse(200, response);
@@ -49,3 +56,7 @@ export const getHistory = async (
     });
   }
 };
+
+export const getHistoryHandler = middy(getHistory)
+  .use(verifyJWTMiddleware())
+  .use(errorHandler());

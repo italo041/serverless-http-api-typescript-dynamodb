@@ -47,7 +47,7 @@ custom:
 
 functions:
   merged:
-    handler: src/handlers/merged.merged
+    handler: src/handlers/merged.mergedHandler
     memorySize: 1024       
     timeout: 10             
     tracing: true
@@ -60,7 +60,7 @@ functions:
       DYNAMODB_CACHE_TABLE: CacheTable
 
   getHistory:
-    handler: src/handlers/getHistory.getHistory
+    handler: src/handlers/getHistory.getHistoryHandler
     memorySize: 1024        
     timeout: 10             
     tracing: true
@@ -73,7 +73,7 @@ functions:
       DYNAMODB_CACHE_TABLE: CacheTable
 
   createOrder:
-    handler: src/handlers/createOrder.createOrder
+    handler: src/handlers/createOrder.createOrderHandler
     memorySize: 1024        
     timeout: 10             
     tracing: true
@@ -92,6 +92,18 @@ functions:
       - httpApi:
           path: /swagger.yaml
           method: get
+  
+  login:
+    handler: src/handlers/authenticate.loginHandler
+    memorySize: 1024
+    timeout: 5
+    events:
+      - httpApi:
+          path: /login
+          method: post
+    environment:
+      COGNITO_USER_POOL_ID: ${env:COGNITO_USER_POOL_ID}
+      COGNITO_CLIENT_ID: ${env:COGNITO_CLIENT_ID}
 
 resources:
   Resources:
@@ -133,3 +145,26 @@ resources:
           - AttributeName: id
             KeyType: HASH
         BillingMode: PAY_PER_REQUEST
+    CognitoUserPool:
+      Type: AWS::Cognito::UserPool
+      Properties:
+        UserPoolName: ${self:service}-user-pool
+        AutoVerifiedAttributes:
+          - email
+        Policies:
+          PasswordPolicy:
+            MinimumLength: 8
+            RequireUppercase: true
+            RequireLowercase: true
+            RequireNumbers: true
+            RequireSymbols: false
+
+    CognitoUserPoolClient:
+      Type: AWS::Cognito::UserPoolClient
+      Properties:
+        ClientName: ${self:service}-user-pool-client
+        UserPoolId: !Ref CognitoUserPool
+        GenerateSecret: false
+        ExplicitAuthFlows:
+          - ADMIN_NO_SRP_AUTH
+          - USER_PASSWORD_AUTH

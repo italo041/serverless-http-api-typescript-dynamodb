@@ -4,6 +4,8 @@ import * as uuid from "uuid";
 import { DynamoDB } from "aws-sdk";
 const dynamoDb = new DynamoDB.DocumentClient();
 import { httpResponse } from "../utils/httpResponse";
+import middy = require("middy");
+import { errorHandler } from "../middlewares/errorHandler";
 
 export const merged = async () => {
   try {
@@ -39,3 +41,5 @@ export const merged = async () => {
     return httpResponse(500, { error: "Error in merged handler" });
   }
 };
+
+export const mergedHandler = middy(merged).use(errorHandler());
