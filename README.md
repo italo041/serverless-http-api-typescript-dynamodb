@@ -84,8 +84,10 @@ Ejemplo para crear una orden:
 ```
 curl -X POST https://<your-api-id>.execute-api.<region>.amazonaws.com/order \
   -d '{"name":"Sable de luz","price":199.99,"type":"arma"}' \
-  -H "Content-Type: application/json"
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <tu_token_jwt>"
 ```
+
 Ejemplo para devolver el historial:
 
 Parámetros soportados (query string):
@@ -94,8 +96,9 @@ Parámetros soportados (query string):
 
 Ejemplo:
 ```
-curl "https://<your-api-id>.execute-api.<region>.amazonaws.com/history?limit=5&lastKey=eyJpZCI6IjEyMyJ9"
-  ```
+curl "https://<your-api-id>.execute-api.<region>.amazonaws.com/history?limit=5&lastKey=eyJpZCI6IjEyMyJ9" \
+  -H "Authorization: Bearer <tu_token_jwt>"
+```
 
 ## Pruebas Locales
 
