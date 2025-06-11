@@ -8,6 +8,21 @@ provider:
   tracing:
     lambda: true
     apiGateway: true
+  httpApi:
+    cors:
+      allowedOrigins:
+        - "*"
+      allowedHeaders:
+        - Content-Type
+        - Authorization
+      allowedMethods:
+        - GET
+        - POST
+        - PUT
+        - DELETE
+        - PATCH
+        - OPTIONS
+      allowCredentials: false
   iamRoleStatements:
     - Effect: "Allow"
       Action:
