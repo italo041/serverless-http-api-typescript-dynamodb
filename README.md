@@ -22,7 +22,6 @@ aws-node-http-api-typescript-dynamodb
 ├── package.json          # Dependencias y scripts npm
 ├── tsconfig.json         # Configuración de TypeScript
 └── README.md             # Documentación del proyecto
-└── swagger.yaml          # Documentación de swagger en formato openapi
 ```
 
 ## Instrucciones de Instalación
