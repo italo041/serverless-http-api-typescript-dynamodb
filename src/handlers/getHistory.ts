@@ -8,37 +8,65 @@ import { httpResponse } from "../utils/httpResponse";
 import middy = require("middy");
 import { verifyJWTMiddleware } from "../middlewares/validateCognito";
 import { errorHandler } from "../middlewares/errorHandler";
+import moment = require("moment");
 
 export const getHistory = async (event: any) => {
   try {
     const query = event.queryStringParameters || {};
 
+    if (query.lastEvaluatedKey && typeof query.lastEvaluatedKey === "string") {
+      try {
+        query.lastEvaluatedKey = JSON.parse(query.lastEvaluatedKey);
+      } catch (e) {
+        return httpResponse(400, {
+          message: "Invalid lastEvaluatedKey format. Must be a valid JSON object.",
+        });
+      }
+    }
+
     const { error, value } = getHistoryQuerySchema.validate(query);
+
     if (error) {
       return httpResponse(400, {
         message: "Invalid query parameters",
         details: error.details,
       });
     }
-    const { limit, lastKey } = value as GetHistoryQueryDTO;
+    const { limit, lastEvaluatedKey, order } = value as GetHistoryQueryDTO;
 
-    const params: DynamoDB.DocumentClient.ScanInput = {
+    const params: DynamoDB.DocumentClient.QueryInput = {
       TableName: process.env.DYNAMODB_TABLE!,
-      ProjectionExpression: "#id, #createdAt, #updatedAt, #response",
+      IndexName: "createdAtIndex",
+      KeyConditionExpression: "#type = :type",
       ExpressionAttributeNames: {
+        "#type": "type",
         "#id": "id",
         "#createdAt": "createdAt",
         "#updatedAt": "updatedAt",
         "#response": "response",
       },
+      ExpressionAttributeValues: {
+        ":type": "history",
+      },
+      ProjectionExpression: "#id, #createdAt, #updatedAt, #response",
+      ScanIndexForward: order == 'asc' ? true : false,
       Limit: limit,
     };
 
-    if (lastKey) {
-      params.ExclusiveStartKey = { id: lastKey };
+    if (lastEvaluatedKey) {
+      params.ExclusiveStartKey = lastEvaluatedKey;
     }
 
-    const data = await dynamoDb.scan(params).promise();
+    const data = await dynamoDb.query(params).promise();
+
+    if (data.Items) {
+      data.Items = data.Items.map(item => {
+        if (item.createdAt) {
+          item.createdAt = moment(item.createdAt).subtract(-5).format("YYYY/MM/DD HH:mm:ss");
+        }
+        return item;
+      });
+    }
 
     const response = {
       data,

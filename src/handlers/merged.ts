@@ -30,6 +30,7 @@ export const merged = async () => {
         response,
         createdAt: timestamp,
         updatedAt: timestamp,
+        type: "history"
       },
     };
 
