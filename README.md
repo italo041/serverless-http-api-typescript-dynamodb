@@ -12,15 +12,17 @@ aws-node-http-api-typescript-dynamodb
 ├── src
 │   ├── dtos/             # Definiciones de Data Transfer Objects (DTOs)
 │   ├── handlers/         # Funciones Lambda (merged, getHistory, createOrder)
+│   ├── middlewares/      # Middlewares personalizados (validacion de cognito, error handling, etc)
 │   ├── services/         # Lógica de negocio y acceso a datos
 │   ├── utils/            # Funciones utilitarias y helpers
 │
-├── tests/                # Pruebas unitarias
+├── tests/                # Pruebas unitarias globales
 ├── .env                  # Variables de entorno (no versionado)
 ├── serverless.yml        # Configuración de Serverless Framework
 ├── package.json          # Dependencias y scripts npm
 ├── tsconfig.json         # Configuración de TypeScript
 └── README.md             # Documentación del proyecto
+└── swagger.yaml          # Documentación de swagger en formato openapi
 ```
 
 ## Instrucciones de Instalación
@@ -47,10 +49,20 @@ Después del despliegue, toma nota de la URL del endpoint que aparece en la sali
 
 - **GET /merged**  
   Devuelve datos combinados de StarWars y MediaWiki cacheados en DynamoDB.
+
 - **GET /history**  
   Devuelve el historial de solicitudes almacenadas en DynamoDB.  
+  **Requiere autenticación Bearer JWT.**
+
 - **POST /order**  
-  Crea una nueva orden en la tabla Orders.
+  Crea una nueva orden en la tabla Orders.  
+  **Requiere autenticación Bearer JWT.**
+
+- **POST /authenticate**  
+  Login con Cognito. Devuelve un token JWT si las credenciales son válidas.
+  
+- **GET /swagger.yaml**  
+  Devuelve la documentación OpenAPI/Swagger de la API.
 
 ## Throttling en API Gateway
 
