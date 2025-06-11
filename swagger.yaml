@@ -8,6 +8,12 @@ servers:
     description: API Gateway endpoint
   - url: http://localhost:3000
     description: Local server (serverless offline)
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
 paths:
   /merged:
     get:
@@ -35,6 +41,8 @@ paths:
   /history:
     get:
       summary: Obtener historial de solicitudes
+      security:
+        - bearerAuth: []
       parameters:
         - in: query
           name: limit
@@ -72,6 +80,8 @@ paths:
   /order:
     post:
       summary: Crear una nueva orden
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -111,3 +121,59 @@ paths:
                         type: number
                       type:
                         type: string
+  /login:
+    post:
+      summary: Login con Cognito
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: username
+                password:
+                  type: string
+                  example: password123
+              required:
+                - username
+                - password
+      responses:
+        "200":
+          description: Login exitoso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      idToken:
+                        type: string
+        "400":
+          description: Error de validación
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  details:
+                    type: array
+                    items:
+                      type: object
+        "401":
+          description: Credenciales inválidas
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
